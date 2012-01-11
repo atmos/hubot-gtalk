@@ -7,7 +7,7 @@ class Gtalkbot extends Adapter
   run: ->
     Xmpp.JID.prototype.from = -> @bare().toString()
 
-    @name = 'Hubot'
+    @name = @robot.name
 
     # Client Options
     @options =
