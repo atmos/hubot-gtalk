@@ -35,6 +35,8 @@ class Gtalkbot extends Adapter
     @client.on 'error', => @error()
 
   online: ->
+    self = @
+
     @client.send new Xmpp.Element('presence')
 
     # He is alive!
@@ -45,6 +47,8 @@ class Gtalkbot extends Adapter
         id: (new Date).getTime()
       )
       .c('query', xmlns: 'jabber:iq:roster')
+
+    self.emit "connected"
 
     # Check for buddy requests every so often
     @client.send roster_query
