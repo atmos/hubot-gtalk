@@ -15,6 +15,7 @@ class Gtalkbot extends Adapter
       password: process.env.HUBOT_GTALK_PASSWORD
       acceptDomains: (entry.trim() for entry in (process.env.HUBOT_GTALK_WHITELIST_DOMAINS ? '').split(',') when entry.trim() != '')
       acceptUsers: (entry.trim() for entry in (process.env.HUBOT_GTALK_WHITELIST_USERS ? '').split(',') when entry.trim() != '')
+      regexpTrans: process.env.HUBOT_GTALK_REGEXP_TRANSFORMATIONS
       host: 'talk.google.com'
       port: 5222
       keepaliveInterval: 15000 # ms interval to send query to gtalk server
@@ -92,6 +93,11 @@ class Gtalkbot extends Adapter
     return unless body
 
     message = body.getText()
+
+    # If we've configured some regexp transformations, apply them on the message
+    if @options.regexpTrans?
+      [reg, trans] = @options.regexpTrans.split("|")
+      message = message.replace(new RegExp(reg), trans)
 
     # Pad the message with robot name just incase it was not provided.
     message = if not message.match(new RegExp("^"+@name+":?","i")) then @name + " " + message else message
