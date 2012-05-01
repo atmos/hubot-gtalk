@@ -1,12 +1,12 @@
 {
   "name":        "hubot-gtalk",
-  "version":     "1.0.2",
+  "version":     "1.0.3",
   "author":      "Hubot",
   "keywords":    "github hubot gtalk adapter",
   "description": "A GTalk adapter for hubot",
   "licenses":     [{
     "type":       "MIT",
-    "url":        "http://github.com/atmos/hubot-gtalk/raw/master/LICENSE"
+    "url":        "http://github.com/atmos/hubot-gtalk/raw/master/LICENSE.md"
   }],
   "repository" : {
     "type" : "git",
