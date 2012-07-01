@@ -33,7 +33,7 @@ class Gtalkbot extends Adapter
     # Events
     @client.on 'online', => @online()
     @client.on 'stanza', (stanza) => @readStanza(stanza)
-    @client.on 'error', => @error()
+    @client.on 'error', (err) => @error(err)
 
   online: ->
     self = @
