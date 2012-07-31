@@ -1,5 +1,4 @@
-Robot   = require('hubot').Robot
-Adapter = require('hubot').Adapter
+{Robot, Adapter, EnterMessage, LeaveMessage, TextMessage} = require('hubot')
 
 Xmpp    = require 'node-xmpp'
 
@@ -104,7 +103,7 @@ class Gtalkbot extends Adapter
 
     # Send the message to the robot
     user = @getUser jid
-    @receive new Robot.TextMessage(user, message)
+    @receive new TextMessage(user, message)
 
   handlePresence: (stanza) ->
     jid = new Xmpp.JID(stanza.attrs.from)
@@ -146,13 +145,13 @@ class Gtalkbot extends Adapter
         user = @getUser jid
         user.online = true
 
-        @receive new Robot.EnterMessage(user)
+        @receive new EnterMessage(user)
 
       when 'unavailable'
         user = @getUser jid
         user.online = false
 
-        @receive new Robot.LeaveMessage(user)
+        @receive new LeaveMessage(user)
 
   getUser: (jid) ->
     user = @userForId jid.from(),
