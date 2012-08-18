@@ -89,7 +89,13 @@ class Gtalkbot extends Adapter
 
     # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
     body = stanza.getChild 'body'
+    invite = stanza.getChild('x').getChild 'invite'
+    
     return unless body
+    
+    if invite
+      @handlePresence stanza
+      return
 
     message = body.getText()
 
@@ -141,6 +147,11 @@ class Gtalkbot extends Adapter
             id:   stanza.attrs.id
         )
 
+      when 'chat'
+        @client.send new Xmpp.Element('presence',
+            to:   "#{stanza.attrs.from}/#{stanza.attrs.to}"
+        )
+
       when 'available'
         user = @getUser jid
         user.online = true
@@ -185,7 +196,7 @@ class Gtalkbot extends Adapter
       message = new Xmpp.Element('message',
           from: @client.jid.toString()
           to: user.id
-          type: 'chat'
+          type: 'groupchat'
         ).
         c('body').t(str)
       # Send it off
@@ -200,4 +211,3 @@ class Gtalkbot extends Adapter
 
 exports.use = (robot) ->
   new Gtalkbot robot
-
