@@ -108,6 +108,8 @@ class Gtalkbot extends Adapter
 
     # Send the message to the robot
     user = @getUser jid
+    user.type = stanza.attrs.type
+
     @receive new TextMessage(user, message)
 
   handlePresence: (stanza) ->
@@ -195,7 +197,7 @@ class Gtalkbot extends Adapter
       message = new Xmpp.Element('message',
           from: @client.jid.toString()
           to: user.id
-          type: 'groupchat'
+          type: user.type or 'groupchat'
         ).
         c('body').t(str)
       # Send it off
