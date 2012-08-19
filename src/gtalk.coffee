@@ -65,6 +65,11 @@ class Gtalkbot extends Adapter
       console.error '[xmpp error] - ' + stanza
       return
 
+    # Detect if message is an invitation
+    if stanza.getChild('x') and stanza.getChild('x').getChild('invite')
+      @handlePresence stanza
+      return
+
     # Check for presence responses
     if stanza.is 'presence'
       @handlePresence stanza
@@ -89,13 +94,7 @@ class Gtalkbot extends Adapter
 
     # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
     body = stanza.getChild 'body'
-    invite = stanza.getChild('x').getChild 'invite'
-    
     return unless body
-    
-    if invite
-      @handlePresence stanza
-      return
 
     message = body.getText()
 
