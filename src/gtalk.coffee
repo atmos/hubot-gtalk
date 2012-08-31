@@ -99,7 +99,18 @@ class Gtalkbot extends Adapter
       message = message.replace(new RegExp(reg), trans)
 
     # Pad the message with robot name just incase it was not provided.
-    message = if not message.match(new RegExp("^"+@name+":?","i")) then @name + " " + message else message
+    # Only pad if this is a direct chat
+    if stanza.attrs.type is 'chat'
+      # Following the same name matching pattern as the Robot
+      if @robot.alias
+        alias = @robot.alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') # escape alias for regexp
+        newRegex = new RegExp("^(?:#{@robot.alias}[:,]?|#{@name}[:,]?)", "i")
+      else
+        newRegex = new RegExp("^#{@name}[:,]?", "i")
+
+      # Prefix message if there is no match
+      unless message.match(newRegex)
+        message = (@name + " " ) + message
 
     # Send the message to the robot
     user = @getUser jid
