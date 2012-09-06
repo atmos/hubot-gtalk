@@ -1,6 +1,6 @@
 {
   "name": "hubot-gtalk",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Hubot",
   "keywords": "github hubot gtalk adapter",
   "description": "A GTalk adapter for hubot",
