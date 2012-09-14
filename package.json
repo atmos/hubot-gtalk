@@ -15,7 +15,7 @@
     "url": "http://github.com/atmos/hubot-gtalk.git"
   },
   "dependencies": {
-    "node-xmpp": ">0"
+    "hubot-xmpp": ">=0.1.0"
   },
   "main": "./src/gtalk"
 }
