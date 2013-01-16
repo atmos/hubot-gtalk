@@ -24,6 +24,7 @@ class Gtalkbot extends Adapter
 
     # Connect to gtalk servers
     @client = new Xmpp.Client
+      reconnect: true
       jid: @options.username
       password: @options.password
       host: @options.host
