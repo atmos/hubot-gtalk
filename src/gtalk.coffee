@@ -204,20 +204,20 @@ class Gtalkbot extends Adapter
 
     return ignore
 
-  send: (user, strings...) ->
+  send: (envelope, strings...) ->
     for str in strings
       message = new Xmpp.Element('message',
           from: @client.jid.toString()
-          to: user.id
-          type: user.type or 'groupchat'
+          to: envelope.user.id
+          type: if envelope.room then 'groupchat' else envelope.user.type
         ).
         c('body').t(str)
       # Send it off
       @client.send message
 
-  reply: (user, strings...) ->
+  reply: (envelope, strings...) ->
     for str in strings
-      @send user, "#{str}"
+      @send envelope, "#{str}"
 
   error: (err) ->
     console.error err
