@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "hubot": ">=2.4.5",
-    "node-xmpp": ">0"
+    "node-xmpp": "~0.3.2"
   },
   "main": "./src/gtalk"
 }
