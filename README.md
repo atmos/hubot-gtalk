@@ -8,6 +8,8 @@ You should report any issues or submit any pull requests to the
 
 ## Getting Started
 
+This adapter no longer works with google group chat. See [issue 30](https://github.com/atmos/hubot-gtalk/issues/30)
+
 You will also need to edit the `package.json` for your hubot and add the
 `hubot-gtalk` adapter dependency.
 
