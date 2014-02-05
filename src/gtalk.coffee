@@ -1,13 +1,13 @@
 {Robot, Adapter, EnterMessage, LeaveMessage, TextMessage} = require('hubot')
 
-Xmpp = require 'node-xmpp-core'
+JID = require 'node-xmpp-core'
 ltx = require 'ltx'
 Client = require 'node-xmpp-client'
 
 class Gtalkbot extends Adapter
 
   run: ->
-    Xmpp.JID.prototype.from = -> @bare().toString()
+    JID.prototype.from = -> @bare().toString()
 
     @name = @robot.name
 
@@ -85,7 +85,7 @@ class Gtalkbot extends Adapter
       return
 
   handleMessage: (stanza) ->
-    jid = new Xmpp.JID(stanza.attrs.from)
+    jid = new JID(stanza.attrs.from)
 
     if @isMe(jid)
       return
@@ -128,7 +128,7 @@ class Gtalkbot extends Adapter
     @receive new TextMessage(user, message)
 
   handlePresence: (stanza) ->
-    jid = new Xmpp.JID(stanza.attrs.from)
+    jid = new JID(stanza.attrs.from)
 
     if @isMe(jid)
       return
