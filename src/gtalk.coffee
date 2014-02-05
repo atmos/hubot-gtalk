@@ -7,7 +7,7 @@ Client = require 'node-xmpp-client'
 class Gtalkbot extends Adapter
 
   run: ->
-    JID.prototype.from = -> @bare().toString()
+    Xmpp.JID.prototype.from = -> @bare().toString()
 
     @name = @robot.name
 
