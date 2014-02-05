@@ -1,8 +1,11 @@
 {Robot, Adapter, EnterMessage, LeaveMessage, TextMessage} = require('hubot')
 
-Xmpp    = require 'node-xmpp-client'
+Xmpp = require 'node-xmpp-client'
+ltx = require('ltx')
+require('node-xmpp-core')
 
 class Gtalkbot extends Adapter
+
   run: ->
     Xmpp.JID.prototype.from = -> @bare().toString()
 
@@ -38,12 +41,12 @@ class Gtalkbot extends Adapter
   online: ->
     self = @
 
-    @client.send new Xmpp.Element('presence')
+    @client.send new ltx.Element('presence')
 
     # He is alive!
     @robot.logger.info @name + ' is online, talk.google.com!'
 
-    roster_query = new Xmpp.Element('iq',
+    roster_query = new ltx.Element('iq',
         type: 'get'
         id: (new Date).getTime()
       )
@@ -146,7 +149,7 @@ class Gtalkbot extends Adapter
       when 'subscribe'
         @robot.logger.info "#{jid.from()} subscribed to us"
 
-        @client.send new Xmpp.Element('presence',
+        @client.send new ltx.Element('presence',
             from: @client.jid.toString()
             to:   stanza.attrs.from
             id:   stanza.attrs.id
@@ -154,14 +157,14 @@ class Gtalkbot extends Adapter
         )
 
       when 'probe'
-        @client.send new Xmpp.Element('presence',
+        @client.send new ltx.Element('presence',
             from: @client.jid.toString()
             to:   stanza.attrs.from
             id:   stanza.attrs.id
         )
 
       when 'chat'
-        @client.send new Xmpp.Element('presence',
+        @client.send new ltx.Element('presence',
             to:   "#{stanza.attrs.from}/#{stanza.attrs.to}"
         )
 
@@ -206,7 +209,7 @@ class Gtalkbot extends Adapter
 
   send: (envelope, strings...) ->
     for str in strings
-      message = new Xmpp.Element('message',
+      message = new ltx.Element('message',
           from: @client.jid.toString()
           to: envelope.user.id
           type: if envelope.room then 'groupchat' else envelope.user.type
