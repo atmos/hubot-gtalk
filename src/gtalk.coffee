@@ -1,8 +1,8 @@
 {Robot, Adapter, EnterMessage, LeaveMessage, TextMessage} = require('hubot')
 
-Xmpp = require 'node-xmpp-client'
-ltx = require('ltx')
-require('node-xmpp-core')
+Xmpp = require 'node-xmpp-core'
+ltx = require 'ltx'
+Client = require 'node-xmpp-client'
 
 class Gtalkbot extends Adapter
 
@@ -26,7 +26,7 @@ class Gtalkbot extends Adapter
       throw new Error('You need to set HUBOT_GTALK_USERNAME and HUBOT_GTALK_PASSWORD anv vars for gtalk to work')
 
     # Connect to gtalk servers
-    @client = new Xmpp.Client
+    @client = new Client
       reconnect: true
       jid: @options.username
       password: @options.password
