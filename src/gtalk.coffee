@@ -1,6 +1,6 @@
 {Robot, Adapter, EnterMessage, LeaveMessage, TextMessage} = require('hubot')
 
-Xmpp    = require 'node-xmpp'
+Xmpp    = require 'node-xmpp-client'
 
 class Gtalkbot extends Adapter
   run: ->
@@ -41,7 +41,7 @@ class Gtalkbot extends Adapter
     @client.send new Xmpp.Element('presence')
 
     # He is alive!
-    console.log @name + ' is online, talk.google.com!'
+    @robot.logger.info @name + ' is online, talk.google.com!'
 
     roster_query = new Xmpp.Element('iq',
         type: 'get'
@@ -59,11 +59,11 @@ class Gtalkbot extends Adapter
 
   readStanza: (stanza) ->
     # Useful for debugging
-    # console.log stanza
+    @robot.logger.debug stanza
 
     # Check for erros
     if stanza.attrs.type is 'error'
-      console.error '[xmpp error] - ' + stanza
+      @robot.logger.error '[xmpp error] - ' + stanza
       return
 
     # Detect if message is an invitation
@@ -88,9 +88,9 @@ class Gtalkbot extends Adapter
       return
 
     if @ignoreUser(jid)
-      console.log "Ignoring user message because of whitelist: #{stanza.attrs.from}"
-      console.log "  Accepted Users: " + @options.acceptUsers.join(',')
-      console.log "  Accepted Domains: " + @options.acceptDomains.join(',')
+      @robot.logger.info "Ignoring user message because of whitelist: #{stanza.attrs.from}"
+      @robot.logger.info "  Accepted Users: " + @options.acceptUsers.join(',')
+      @robot.logger.info "  Accepted Domains: " + @options.acceptDomains.join(',')
       return
 
     # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
@@ -131,9 +131,9 @@ class Gtalkbot extends Adapter
       return
 
     if @ignoreUser(jid)
-      console.log "Ignoring user presence because of whitelist: #{stanza.attrs.from}"
-      console.log "  Accepted Users: " + @options.acceptUsers.join(',')
-      console.log "  Accepted Domains: " + @options.acceptDomains.join(',')
+      @robot.logger.info "Ignoring user presence because of whitelist: #{stanza.attrs.from}"
+      @robot.logger.info "  Accepted Users: " + @options.acceptUsers.join(',')
+      @robot.logger.info "  Accepted Domains: " + @options.acceptDomains.join(',')
       return
 
     # xmpp doesn't add types for standard available mesages
@@ -144,7 +144,7 @@ class Gtalkbot extends Adapter
 
     switch stanza.attrs.type
       when 'subscribe'
-        console.log "#{jid.from()} subscribed to us"
+        @robot.logger.info "#{jid.from()} subscribed to us"
 
         @client.send new Xmpp.Element('presence',
             from: @client.jid.toString()
@@ -220,7 +220,7 @@ class Gtalkbot extends Adapter
       @send envelope, "#{str}"
 
   error: (err) ->
-    console.error err
+    @robot.logger.error err
 
 exports.use = (robot) ->
   new Gtalkbot robot
