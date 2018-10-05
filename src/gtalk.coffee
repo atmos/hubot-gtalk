@@ -1,8 +1,11 @@
 {Robot, Adapter, EnterMessage, LeaveMessage, TextMessage} = require('hubot')
 
-Xmpp    = require 'node-xmpp'
+Xmpp = require 'node-xmpp-core'
+ltx = require 'ltx'
+Client = require 'node-xmpp-client'
 
 class Gtalkbot extends Adapter
+
   run: ->
     Xmpp.JID.prototype.from = -> @bare().toString()
 
@@ -23,7 +26,7 @@ class Gtalkbot extends Adapter
       throw new Error('You need to set HUBOT_GTALK_USERNAME and HUBOT_GTALK_PASSWORD anv vars for gtalk to work')
 
     # Connect to gtalk servers
-    @client = new Xmpp.Client
+    @client = new Client
       reconnect: true
       jid: @options.username
       password: @options.password
@@ -38,12 +41,12 @@ class Gtalkbot extends Adapter
   online: ->
     self = @
 
-    @client.send new Xmpp.Element('presence')
+    @client.send new ltx.Element('presence')
 
     # He is alive!
-    console.log @name + ' is online, talk.google.com!'
+    @robot.logger.info @name + ' is online, talk.google.com!'
 
-    roster_query = new Xmpp.Element('iq',
+    roster_query = new ltx.Element('iq',
         type: 'get'
         id: (new Date).getTime()
       )
@@ -59,11 +62,11 @@ class Gtalkbot extends Adapter
 
   readStanza: (stanza) ->
     # Useful for debugging
-    # console.log stanza
+    @robot.logger.debug stanza
 
     # Check for erros
     if stanza.attrs.type is 'error'
-      console.error '[xmpp error] - ' + stanza
+      @robot.logger.error '[xmpp error] - ' + stanza
       return
 
     # Detect if message is an invitation
@@ -88,9 +91,9 @@ class Gtalkbot extends Adapter
       return
 
     if @ignoreUser(jid)
-      console.log "Ignoring user message because of whitelist: #{stanza.attrs.from}"
-      console.log "  Accepted Users: " + @options.acceptUsers.join(',')
-      console.log "  Accepted Domains: " + @options.acceptDomains.join(',')
+      @robot.logger.info "Ignoring user message because of whitelist: #{stanza.attrs.from}"
+      @robot.logger.info "  Accepted Users: " + @options.acceptUsers.join(',')
+      @robot.logger.info "  Accepted Domains: " + @options.acceptDomains.join(',')
       return
 
     # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
@@ -131,9 +134,9 @@ class Gtalkbot extends Adapter
       return
 
     if @ignoreUser(jid)
-      console.log "Ignoring user presence because of whitelist: #{stanza.attrs.from}"
-      console.log "  Accepted Users: " + @options.acceptUsers.join(',')
-      console.log "  Accepted Domains: " + @options.acceptDomains.join(',')
+      @robot.logger.info "Ignoring user presence because of whitelist: #{stanza.attrs.from}"
+      @robot.logger.info "  Accepted Users: " + @options.acceptUsers.join(',')
+      @robot.logger.info "  Accepted Domains: " + @options.acceptDomains.join(',')
       return
 
     # xmpp doesn't add types for standard available mesages
@@ -144,9 +147,9 @@ class Gtalkbot extends Adapter
 
     switch stanza.attrs.type
       when 'subscribe'
-        console.log "#{jid.from()} subscribed to us"
+        @robot.logger.info "#{jid.from()} subscribed to us"
 
-        @client.send new Xmpp.Element('presence',
+        @client.send new ltx.Element('presence',
             from: @client.jid.toString()
             to:   stanza.attrs.from
             id:   stanza.attrs.id
@@ -154,14 +157,14 @@ class Gtalkbot extends Adapter
         )
 
       when 'probe'
-        @client.send new Xmpp.Element('presence',
+        @client.send new ltx.Element('presence',
             from: @client.jid.toString()
             to:   stanza.attrs.from
             id:   stanza.attrs.id
         )
 
       when 'chat'
-        @client.send new Xmpp.Element('presence',
+        @client.send new ltx.Element('presence',
             to:   "#{stanza.attrs.from}/#{stanza.attrs.to}"
         )
 
@@ -206,7 +209,7 @@ class Gtalkbot extends Adapter
 
   send: (envelope, strings...) ->
     for str in strings
-      message = new Xmpp.Element('message',
+      message = new ltx.Element('message',
           from: @client.jid.toString()
           to: envelope.user.id
           type: if envelope.room then 'groupchat' else envelope.user.type
@@ -220,7 +223,7 @@ class Gtalkbot extends Adapter
       @send envelope, "#{str}"
 
   error: (err) ->
-    console.error err
+    @robot.logger.error err
 
 exports.use = (robot) ->
   new Gtalkbot robot
